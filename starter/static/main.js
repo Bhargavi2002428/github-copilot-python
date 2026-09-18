@@ -77,8 +77,13 @@ function renderPuzzle(puz) {
 }
 
 async function newGame() {
-  const res = await fetch('/new');
+  const difficulty = document.getElementById('difficulty').value;
+  const res = await fetch(`/new?difficulty=${encodeURIComponent(difficulty)}`);
   const data = await res.json();
+  if (data.error) {
+    document.getElementById('message').innerText = data.error;
+    return;
+  }
   renderPuzzle(data.puzzle);
   document.getElementById('message').innerText = '';
   startTimer();
