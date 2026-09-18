@@ -116,3 +116,78 @@ button:hover {
     font-weight: bold;
     color: #333;
 }
+
+.scores {
+    width: min(720px, calc(100% - 32px));
+    margin: 32px auto;
+    text-align: left;
+}
+
+.scores h2 {
+    color: #333;
+    font-size: 24px;
+    text-align: center;
+}
+
+.score-table-wrap {
+    overflow-x: auto;
+    background: #fff;
+    border: 1px solid #ccc;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 480px;
+}
+
+th,
+td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+
+th {
+    background: #e3f2fd;
+    color: #263238;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+@media (max-width: 600px) {
+    .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        justify-content: center;
+    }
+
+    button {
+        margin: 0;
+    }
+
+    #message {
+        flex-basis: 100%;
+        margin: 0;
+    }
+
+    .scores {
+        width: calc(100% - 20px);
+    }
+}

@@ -22,6 +22,24 @@
     <span class="hint-label">Hints: <span id="hint-count" aria-live="polite">0</span></span>
     <span id="message" role="status" aria-live="polite" aria-atomic="true"></span>
   </div>
+  <section class="scores" aria-labelledby="scores-heading">
+    <h2 id="scores-heading">Top 10 Scores</h2>
+    <div class="score-table-wrap">
+      <table>
+        <caption class="visually-hidden">Top 10 Sudoku completion scores</caption>
+        <thead>
+          <tr>
+            <th scope="col">Rank</th>
+            <th scope="col">Player</th>
+            <th scope="col">Time</th>
+            <th scope="col">Hints</th>
+            <th scope="col">Difficulty</th>
+          </tr>
+        </thead>
+        <tbody id="score-body"></tbody>
+      </table>
+    </div>
+  </section>
   <script src="/static/main.js"></script>
 </body>
 </html>

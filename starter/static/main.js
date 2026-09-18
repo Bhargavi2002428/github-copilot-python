@@ -4,6 +4,10 @@ let puzzle = [];
 let timerInterval = null;
 let elapsedSeconds = 0;
 let hintCount = 0;
+let gameCompleted = false;
+
+const SCORES_KEY = 'sudokuTopScores';
+const MAX_SCORES = 10;
 
 function formatTime(seconds) {
   const mm = String(Math.floor(seconds / 60)).padStart(2, '0');
@@ -67,6 +71,64 @@ function handleCellInput(event) {
   input.setAttribute('aria-invalid', 'false');
 }
 
+function loadScores() {
+  try {
+    const storedScores = localStorage.getItem(SCORES_KEY);
+    const scores = storedScores ? JSON.parse(storedScores) : [];
+    return Array.isArray(scores) ? scores : [];
+  } catch (error) {
+    return [];
+  }
+}
+
+function renderScores() {
+  const scoreBody = document.getElementById('score-body');
+  const scores = loadScores();
+  scoreBody.innerHTML = '';
+
+  if (scores.length === 0) {
+    const row = document.createElement('tr');
+    const cell = document.createElement('td');
+    cell.colSpan = 5;
+    cell.textContent = 'No completed games yet.';
+    row.appendChild(cell);
+    scoreBody.appendChild(row);
+    return;
+  }
+
+  scores.forEach((score, index) => {
+    const row = document.createElement('tr');
+    [index + 1, score.name, formatTime(score.time), score.hints, score.difficulty]
+      .forEach((value) => {
+        const cell = document.createElement('td');
+        cell.textContent = value;
+        row.appendChild(cell);
+      });
+    scoreBody.appendChild(row);
+  });
+}
+
+function saveScore() {
+  const playerName = window.prompt('Enter your name for the Top 10 scores:', '');
+  const score = {
+    name: playerName && playerName.trim() ? playerName.trim() : 'Anonymous',
+    time: elapsedSeconds,
+    hints: hintCount,
+    difficulty: document.getElementById('difficulty').value,
+  };
+
+  const scores = loadScores();
+  scores.push(score);
+  scores.sort((first, second) => first.time - second.time);
+  const topScores = scores.slice(0, MAX_SCORES);
+  try {
+    localStorage.setItem(SCORES_KEY, JSON.stringify(topScores));
+  } catch (error) {
+    // The game remains usable when browser storage is unavailable.
+  }
+  renderScores();
+}
+
 function createBoardElement() {
   const boardDiv = document.getElementById('sudoku-board');
   boardDiv.innerHTML = '';
@@ -80,10 +142,6 @@ function createBoardElement() {
       input.className = 'sudoku-cell';
       input.dataset.row = i;
       input.dataset.col = j;
-      input.addEventListener('input', (e) => {
-        const val = e.target.value.replace(/[^1-9]/g, '');
-        e.target.value = val;
-      });
       rowDiv.appendChild(input);
     }
     boardDiv.appendChild(rowDiv);
@@ -121,6 +179,7 @@ async function newGame() {
     return;
   }
   renderPuzzle(data.puzzle);
+  gameCompleted = false;
   hintCount = 0;
   updateHintCount();
   document.getElementById('message').innerText = '';
@@ -186,6 +245,10 @@ async function checkSolution() {
     msg.innerText = `Congratulations! You solved it in ${formatTime(elapsedSeconds)} using ${hintCount} ${hintLabel}.`;
     // Stop/freeze the timer when puzzle is completed correctly
     stopTimer();
+    if (!gameCompleted) {
+      gameCompleted = true;
+      saveScore();
+    }
   } else {
     msg.style.color = '#d32f2f';
     msg.innerText = 'Some cells are incorrect.';
@@ -198,6 +261,7 @@ window.addEventListener('load', () => {
   document.getElementById('new-game').addEventListener('click', newGame);
   document.getElementById('hint').addEventListener('click', useHint);
   document.getElementById('check-solution').addEventListener('click', checkSolution);
+  renderScores();
   // initialize
   newGame();
 });
