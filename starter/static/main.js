@@ -49,6 +49,24 @@ function updateHintCount() {
   document.getElementById('hint-count').textContent = hintCount;
 }
 
+function handleCellInput(event) {
+  const input = event.target;
+  if (!input.matches('.sudoku-cell') || input.disabled) return;
+
+  const message = document.getElementById('message');
+  if (input.value && !/^[1-9]$/.test(input.value)) {
+    input.value = '';
+    input.classList.add('invalid-input');
+    input.setAttribute('aria-invalid', 'true');
+    message.style.color = '#b71c1c';
+    message.innerText = 'Invalid entry cleared. Enter a digit from 1 to 9.';
+    return;
+  }
+
+  input.classList.remove('invalid-input');
+  input.setAttribute('aria-invalid', 'false');
+}
+
 function createBoardElement() {
   const boardDiv = document.getElementById('sudoku-board');
   boardDiv.innerHTML = '';
@@ -158,11 +176,14 @@ async function checkSolution() {
     inp.className = 'sudoku-cell';
     if (incorrect.has(idx)) {
       inp.className = 'sudoku-cell incorrect';
+    } else if (inp.value) {
+      inp.className = 'sudoku-cell correct';
     }
   }
   if (incorrect.size === 0) {
     msg.style.color = '#388e3c';
-    msg.innerText = 'Congratulations! You solved it!';
+    const hintLabel = hintCount === 1 ? 'hint' : 'hints';
+    msg.innerText = `Congratulations! You solved it in ${formatTime(elapsedSeconds)} using ${hintCount} ${hintLabel}.`;
     // Stop/freeze the timer when puzzle is completed correctly
     stopTimer();
   } else {
@@ -173,6 +194,7 @@ async function checkSolution() {
 
 // Wire buttons
 window.addEventListener('load', () => {
+  document.getElementById('sudoku-board').addEventListener('input', handleCellInput);
   document.getElementById('new-game').addEventListener('click', newGame);
   document.getElementById('hint').addEventListener('click', useHint);
   document.getElementById('check-solution').addEventListener('click', checkSolution);

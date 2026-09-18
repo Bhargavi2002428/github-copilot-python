@@ -50,8 +50,19 @@ h1 {
     color: #7a5c00;
 }
 
+.sudoku-cell.invalid-input {
+    background: #ffecb3;
+    border: 2px solid #b71c1c;
+}
+
 .sudoku-cell.incorrect {
     background: #ffcdd2;
+    border: 2px solid #b71c1c;
+}
+
+.sudoku-cell.correct {
+    background: #c8e6c9;
+    border: 2px solid #388e3c;
 }
 
 .sudoku-cell:nth-child(3),
