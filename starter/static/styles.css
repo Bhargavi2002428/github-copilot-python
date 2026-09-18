@@ -1,18 +1,26 @@
+* {
+    box-sizing: border-box;
+}
+
 body {
     font-family: Arial, sans-serif;
     background: #f4f4f4;
     text-align: center;
     margin: 0;
     padding: 0;
+    overflow-x: hidden;
 }
 
 h1 {
     margin-top: 30px;
     color: #333;
+    padding: 0 16px;
 }
 
 #sudoku-board {
-    display: inline-block;
+    display: block;
+    width: min(450px, calc(100vw - 24px));
+    aspect-ratio: 1;
     margin: 30px auto;
     border: 4px solid #333;
     background: #fff;
@@ -20,15 +28,20 @@ h1 {
 }
 
 .sudoku-row {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(9, minmax(0, 1fr));
+    height: 11.1111%;
 }
 
 .sudoku-cell {
-    width: 40px;
-    height: 40px;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
     border: 1px solid #bbb;
     text-align: center;
     font-size: 20px;
+    font-weight: normal;
     outline: none;
     background: #fafafa;
     transition: background 0.2s;
@@ -36,6 +49,10 @@ h1 {
 
 .sudoku-cell:focus {
     background: #e0f7fa;
+    outline: 3px solid #1565c0;
+    outline-offset: -3px;
+    position: relative;
+    z-index: 1;
 }
 
 .sudoku-cell.prefilled {
@@ -76,12 +93,18 @@ h1 {
 }
 
 .controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: min(900px, calc(100% - 24px));
     margin: 20px auto;
 }
 
 button {
     padding: 8px 18px;
-    margin: 0 8px;
+    margin: 0;
     font-size: 16px;
     border: none;
     background: #1976d2;
@@ -96,7 +119,9 @@ button:hover {
 }
 
 #message {
-    margin-left: 20px;
+    flex-basis: 100%;
+    min-height: 1.25em;
+    margin: 0;
     font-size: 16px;
     color: #d32f2f;
 }
@@ -131,6 +156,7 @@ button:hover {
 
 .score-table-wrap {
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
     background: #fff;
     border: 1px solid #ccc;
 }
@@ -170,24 +196,69 @@ tbody tr:last-child td {
 }
 
 @media (max-width: 600px) {
+    h1 {
+        margin-top: 20px;
+        font-size: 28px;
+    }
+
+    #sudoku-board {
+        margin: 20px auto;
+    }
+
+    .sudoku-cell {
+        font-size: 18px;
+    }
+
     .controls {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        align-items: center;
-        justify-content: center;
+        width: calc(100% - 20px);
     }
 
     button {
-        margin: 0;
+        min-height: 44px;
+        padding: 8px 14px;
     }
 
-    #message {
-        flex-basis: 100%;
-        margin: 0;
+    select {
+        min-height: 44px;
+        font-size: 16px;
     }
 
     .scores {
         width: calc(100% - 20px);
+        margin-top: 28px;
+    }
+
+    .scores h2 {
+        font-size: 22px;
+    }
+}
+
+@media (max-width: 360px) {
+    #sudoku-board {
+        width: calc(100vw - 16px);
+        border-width: 3px;
+    }
+
+    .sudoku-cell {
+        font-size: 16px;
+    }
+
+    .controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .controls label,
+    .controls select,
+    .controls button,
+    .timer-label,
+    .hint-label {
+        width: 100%;
+        margin: 0;
+        text-align: center;
+    }
+
+    .scores {
+        width: calc(100% - 16px);
     }
 }
