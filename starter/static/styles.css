@@ -44,6 +44,12 @@ h1 {
     color: #333;
 }
 
+.sudoku-cell.hinted {
+    background: #fff3b0;
+    font-weight: bold;
+    color: #7a5c00;
+}
+
 .sudoku-cell.incorrect {
     background: #ffcdd2;
 }
@@ -85,6 +91,14 @@ button:hover {
 }
 
 .timer-label {
+    display: inline-block;
+    margin-left: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}
+
+.hint-label {
     display: inline-block;
     margin-left: 8px;
     font-size: 16px;

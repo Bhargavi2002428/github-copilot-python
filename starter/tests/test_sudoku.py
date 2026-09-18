@@ -1,6 +1,6 @@
 import pytest
 
-from app import app
+from app import CURRENT, app
 from sudoku_logic import count_solutions, generate_puzzle
 
 
@@ -61,3 +61,51 @@ def test_new_game_rejects_invalid_difficulty():
     assert response.get_json() == {
         'error': 'Invalid difficulty. Choose easy, medium, or hard.'
     }
+
+
+def test_hint_fills_an_empty_cell_with_the_solution_value():
+    client = app.test_client()
+    new_response = client.get('/new?difficulty=medium')
+    assert new_response.status_code == 200
+    puzzle = new_response.get_json()['puzzle']
+    board = [row[:] for row in puzzle]
+
+    response = client.post('/hint', json={'board': board})
+
+    assert response.status_code == 200
+    hint = response.get_json()
+    assert puzzle[hint['row']][hint['col']] == 0
+    assert hint['value'] == CURRENT['solution'][hint['row']][hint['col']]
+
+
+def test_hint_does_not_overwrite_user_entered_cells():
+    client = app.test_client()
+    new_response = client.get('/new?difficulty=medium')
+    assert new_response.status_code == 200
+    puzzle = new_response.get_json()['puzzle']
+    board = [row[:] for row in puzzle]
+    empty_cells = [
+        (row, col)
+        for row in range(9)
+        for col in range(9)
+        if puzzle[row][col] == 0
+    ]
+    entered_row, entered_col = empty_cells[0]
+    board[entered_row][entered_col] = 9
+
+    response = client.post('/hint', json={'board': board})
+
+    assert response.status_code == 200
+    hint = response.get_json()
+    assert (hint['row'], hint['col']) != (entered_row, entered_col)
+
+
+def test_hint_rejects_board_with_no_empty_cells():
+    client = app.test_client()
+    new_response = client.get('/new?difficulty=medium')
+    assert new_response.status_code == 200
+
+    response = client.post('/hint', json={'board': [[1] * 9 for _ in range(9)]})
+
+    assert response.status_code == 400
+    assert response.get_json() == {'error': 'There are no empty cells left for a hint.'}
